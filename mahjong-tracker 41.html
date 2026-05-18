@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🀄 Mahjong Collection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#cc1f8a;--red-light:#fce8f5;--red-dark:#96146a;
+  --gold:#f5a623;--gold-light:#fef3dc;--gold-dark:#c47d00;
+  --teal:#00b8a0;--teal-light:#d6f5f1;--teal-dark:#007a6b;
+  --purple:#7c4dff;--purple-light:#ede7ff;--purple-dark:#5a2fd4;
+  --orange:#f57c00;--orange-light:#fff0e0;
+  --pink:#e91e8c;--pink-light:#fce4f3;--pink-dark:#ad1060;
+  --green:#2e7d32;--green-light:#e8f5e9;--green-dark:#1b5e20;
+  --navy:#1a1f3a;--cream:#fdf8f0;--white:#ffffff;
+  --text:#1a1f3a;--text-mid:#4a5080;--text-soft:#8890b8;
+  --shadow:0 4px 24px rgba(26,31,58,0.12);
+  --shadow-lg:0 8px 40px rgba(26,31,58,0.18);
+  --r:16px;--r-sm:10px;--r-xs:6px;
+  --font:'Outfit',sans-serif;
+}
+body{font-family:var(--font);background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle at 15% 20%,rgba(124,77,255,0.07) 0%,transparent 50%),
+    radial-gradient(circle at 85% 80%,rgba(0,184,160,0.07) 0%,transparent 50%),
+    radial-gradient(circle at 50% 50%,rgba(204,31,138,0.04) 0%,transparent 60%);}
+.wrap{max-width:700px;margin:0 auto;padding:0 1rem 6rem;position:relative;z-index:1}
+.header{padding:2rem 0 1.5rem;text-align:center}
+.header-tiles{display:flex;justify-content:center;margin-bottom:1rem;line-height:1}
+.header h1{font-size:28px;font-weight:700;color:#ff1493;letter-spacing:-0.5px;font-family:'Playfair Display',serif;font-style:italic}
+.header p{font-size:14px;color:var(--text-soft);margin-top:4px}
+/* tabs — two rows on mobile */
+.tabs{display:flex;gap:6px;margin-bottom:1.5rem;background:var(--white);border-radius:var(--r);padding:6px;box-shadow:var(--shadow);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:9px 14px;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all 0.2s;color:var(--text-soft);background:transparent;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.tab i{font-size:14px}
+.tab.active.t-combos{background:var(--red);color:var(--white);box-shadow:0 2px 12px rgba(204,31,138,0.35)}
+.tab.active.t-mats{background:var(--teal);color:var(--white);box-shadow:0 2px 12px rgba(0,184,160,0.35)}
+.tab.active.t-tiles{background:var(--purple);color:var(--white);box-shadow:0 2px 12px rgba(124,77,255,0.35)}
+.tab.active.t-cloths{background:var(--pink);color:var(--white);box-shadow:0 2px 12px rgba(233,30,140,0.35)}
+.tab.active.t-racks{background:var(--orange);color:var(--white);box-shadow:0 2px 12px rgba(245,124,0,0.35)}
+.tab.active.t-accessories{background:var(--green);color:var(--white);box-shadow:0 2px 12px rgba(46,125,50,0.35)}
+.tab:hover:not(.active){background:var(--cream);color:var(--text)}
+.tab-badge{background:rgba(255,255,255,0.3);border-radius:20px;padding:1px 6px;font-size:10px;font-weight:700}
+.tab:not(.active) .tab-badge{background:var(--cream);color:var(--text-soft)}
+.section{display:none}.section.active{display:block}
+.sec-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem}
+.sec-icon{width:40px;height:40px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.sec-icon.red{background:var(--red-light);color:var(--red)}
+.sec-icon.teal{background:var(--teal-light);color:var(--teal)}
+.sec-icon.purple{background:var(--purple-light);color:var(--purple)}
+.sec-icon.pink{background:var(--pink-light);color:var(--pink)}
+.sec-icon.orange{background:var(--orange-light);color:var(--orange)}
+.sec-icon.green{background:var(--green-light);color:var(--green)}
+.sec-header h2{font-size:18px;font-weight:700;color:var(--navy)}
+.sec-header p{font-size:13px;color:var(--text-soft);margin-top:1px}
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap .s-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--text-soft);pointer-events:none}
+.search-wrap input{width:100%;padding:11px 12px 11px 40px;border:2px solid transparent;border-radius:var(--r-sm);background:var(--white);font-size:14px;font-family:var(--font);color:var(--text);box-shadow:var(--shadow);outline:none;transition:border-color 0.2s}
+.search-wrap input:focus{border-color:var(--red)}
+.search-wrap input::placeholder{color:var(--text-soft)}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:2.5px dashed;border-radius:var(--r);background:transparent;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all 0.2s;margin-bottom:1.25rem}
+.add-btn.red{border-color:var(--red);color:var(--red)}.add-btn.red:hover{background:var(--red-light)}
+.add-btn.teal{border-color:var(--teal);color:var(--teal)}.add-btn.teal:hover{background:var(--teal-light)}
+.add-btn.purple{border-color:var(--purple);color:var(--purple)}.add-btn.purple:hover{background:var(--purple-light)}
+.add-btn.pink{border-color:var(--pink);color:var(--pink)}.add-btn.pink:hover{background:var(--pink-light)}
+.add-btn.orange{border-color:var(--orange);color:var(--orange)}.add-btn.orange:hover{background:var(--orange-light)}
+.add-btn.green{border-color:var(--green);color:var(--green)}.add-btn.green:hover{background:var(--green-light)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:1rem}
+.item-card{background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);transition:transform 0.18s,box-shadow 0.18s;cursor:pointer}
+.item-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.item-img{width:100%;height:120px;object-fit:cover;display:block}
+.item-img-placeholder{width:100%;height:120px;display:flex;align-items:center;justify-content:center;font-size:36px;flex-direction:column;gap:4px}
+.ph-teal{background:var(--teal-light)}.ph-purple{background:var(--purple-light)}
+.ph-pink{background:var(--pink-light)}.ph-orange{background:var(--orange-light)}.ph-green{background:var(--green-light)}
+.item-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:3px 8px;border-radius:20px;margin:10px 12px 0}
+.item-tag.teal{background:var(--teal-light);color:var(--teal-dark)}
+.item-tag.purple{background:var(--purple-light);color:var(--purple-dark)}
+.item-tag.pink{background:var(--pink-light);color:var(--pink-dark)}
+.item-tag.orange{background:var(--orange-light);color:var(--orange)}
+.item-tag.green{background:var(--green-light);color:var(--green-dark)}
+.item-body{padding:6px 12px 10px}
+.item-name{font-size:14px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-designer{font-size:11px;font-weight:600;color:var(--text-soft);margin-top:2px}
+.item-notes{font-size:12px;color:var(--text-soft);line-height:1.4;margin-top:3px;max-height:32px;overflow:hidden}
+.item-actions{display:flex;border-top:1px solid rgba(26,31,58,0.06)}
+.act-btn{flex:1;padding:8px;border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font);color:var(--text-soft);transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:4px}
+.act-btn:first-child{border-right:1px solid rgba(26,31,58,0.06)}
+.act-btn:hover{background:var(--cream)}
+.act-btn.danger:hover{background:var(--red-light);color:var(--red)}
+.act-btn.edit:hover{background:var(--teal-light);color:var(--teal)}
+/* combo cards */
+.combos-list{display:flex;flex-direction:column;gap:12px;margin-bottom:1rem}
+.combo-card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;transition:transform 0.18s,box-shadow 0.18s;cursor:pointer}
+.combo-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.combo-card.favorited{box-shadow:0 4px 24px rgba(245,166,35,0.25);outline:2.5px solid var(--gold)}
+.combo-imgs{display:flex;gap:2px;height:70px;flex-shrink:0}
+.combo-img-third{flex:1;object-fit:cover;height:70px}
+.combo-img-third-ph{flex:1;height:70px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.combo-body{padding:10px 14px;min-width:0}
+.combo-name{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.combo-pills{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px}
+.pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.pill.teal{background:var(--teal-light);color:var(--teal-dark)}
+.pill.purple{background:var(--purple-light);color:var(--purple-dark)}
+.pill.pink{background:var(--pink-light);color:var(--pink-dark)}
+.pill.orange{background:var(--orange-light);color:var(--orange)}
+.pill.green{background:var(--green-light);color:var(--green-dark)}
+.pill.opt{opacity:0.75}
+.combo-notes{font-size:12px;color:var(--text-soft);line-height:1.4;margin-bottom:5px}
+.last-used-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;margin-top:2px}
+.last-used-badge.used{background:var(--teal-light);color:var(--teal-dark)}
+.last-used-badge.never{background:var(--orange-light);color:var(--orange)}
+.combo-actions{display:flex;align-items:center;gap:4px;padding:0 12px 12px;justify-content:flex-end;flex-wrap:wrap}
+.fav-btn{background:none;border:2px solid var(--gold);border-radius:var(--r-xs);cursor:pointer;padding:5px 8px;color:var(--gold-dark);transition:all 0.18s;display:flex;align-items:center;gap:4px;font-family:var(--font);font-weight:700;font-size:12px}
+.fav-btn.on{background:var(--gold);color:var(--white);border-color:var(--gold)}
+.fav-btn:hover:not(.on){background:var(--gold-light)}
+.edit-btn{background:none;border:2px solid var(--teal);border-radius:var(--r-xs);cursor:pointer;padding:5px 8px;font-size:12px;font-weight:700;color:var(--teal-dark);font-family:var(--font);transition:all 0.18s;display:flex;align-items:center;gap:4px}
+.edit-btn:hover{background:var(--teal-light)}
+.del-btn{background:none;border:2px solid rgba(204,31,138,0.2);border-radius:var(--r-xs);cursor:pointer;padding:5px 8px;font-size:14px;color:var(--red);transition:all 0.18s;display:flex;align-items:center}
+.del-btn:hover{background:var(--red-light);border-color:var(--red)}
+/* filter & misc */
+.count-label{font-size:13px;color:var(--text-soft);margin-bottom:0.75rem;font-weight:500}
+.group-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-soft);margin:1rem 0 0.5rem;display:flex;align-items:center;gap:6px}
+.group-label::after{content:'';flex:1;height:1px;background:rgba(26,31,58,0.08)}
+.filter-bar{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;margin-bottom:1rem;display:flex;flex-direction:column;gap:12px}
+.filter-section-label{font-size:12px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.06em}
+.filter-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.toggle-track{width:38px;height:22px;border-radius:11px;background:rgba(26,31,58,0.12);position:relative;transition:background 0.2s;flex-shrink:0}
+.toggle-track::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--white);transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.filter-toggle.on .toggle-track{background:var(--red)}
+.filter-toggle.on .toggle-track::after{transform:translateX(16px)}
+.filter-toggle span{font-size:13px;font-weight:500;color:var(--text-mid)}
+.days-slider-row{display:flex;align-items:center;gap:10px}
+.days-slider-row input[type=range]{flex:1;accent-color:var(--red);height:4px}
+.days-val{font-size:13px;font-weight:700;color:var(--red);min-width:72px;text-align:right}
+.filter-divider{height:1px;background:rgba(26,31,58,0.07)}
+/* combo modal extras */
+.combo-section-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-soft);margin:1rem 0 0.5rem}
+.rack-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rack-row select{flex:1;font-size:14px;padding:8px 10px;border:2px solid rgba(26,31,58,0.1);border-radius:var(--r-sm);background:var(--cream);color:var(--text);font-family:var(--font);outline:none}
+.rack-row select:focus{border-color:var(--teal)}
+.rack-remove{background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-soft);padding:4px;transition:color 0.15s}
+.rack-remove:hover{color:var(--red)}
+.add-rack-btn{display:flex;align-items:center;gap:6px;background:none;border:1.5px dashed rgba(26,31,58,0.2);border-radius:var(--r-xs);padding:6px 12px;font-size:12px;font-weight:600;color:var(--text-soft);cursor:pointer;font-family:var(--font);transition:all 0.15s;margin-top:4px}
+.add-rack-btn:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-light)}
+/* empty states */
+.empty{text-align:center;padding:3rem 1rem}
+.empty-icon{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:30px}
+.empty-icon.red{background:var(--red-light)}.empty-icon.teal{background:var(--teal-light)}
+.empty-icon.purple{background:var(--purple-light)}.empty-icon.pink{background:var(--pink-light)}
+.empty-icon.orange{background:var(--orange-light)}.empty-icon.green{background:var(--green-light)}
+.empty h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.empty p{font-size:13px;color:var(--text-soft);line-height:1.5}
+/* modals */
+.modal-bg{position:fixed;inset:0;background:rgba(26,31,58,0.55);display:flex;align-items:flex-start;justify-content:center;z-index:200;padding:2rem 1rem;overflow-y:auto;backdrop-filter:blur(3px);visibility:hidden;opacity:0;transition:opacity 0.2s,visibility 0.2s}
+.modal-bg.open{visibility:visible;opacity:1}
+.modal{background:var(--white);border-radius:20px;padding:1.75rem;width:100%;max-width:440px;margin:auto;box-shadow:var(--shadow-lg)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem}
+.modal-icon{width:44px;height:44px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.modal-icon.teal{background:var(--teal-light);color:var(--teal)}
+.modal-icon.purple{background:var(--purple-light);color:var(--purple)}
+.modal-icon.red{background:var(--red-light);color:var(--red)}
+.modal-icon.pink{background:var(--pink-light);color:var(--pink)}
+.modal-icon.orange{background:var(--orange-light);color:var(--orange)}
+.modal-icon.green{background:var(--green-light);color:var(--green)}
+.modal-title{font-size:18px;font-weight:700;color:var(--navy)}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-size:13px;color:var(--text-mid);margin-bottom:5px;font-weight:600}
+.field input[type=text],.field input[type=date],.field textarea,.field select{width:100%;font-size:14px;padding:10px 12px;border:2px solid rgba(26,31,58,0.1);border-radius:var(--r-sm);background:var(--cream);color:var(--text);font-family:var(--font);outline:none;transition:border-color 0.2s;display:block}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--teal);background:var(--white)}
+.field textarea{resize:vertical;min-height:72px}
+.photo-upload-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:2px dashed rgba(26,31,58,0.15);border-radius:var(--r-sm);background:var(--cream);cursor:pointer;font-size:13px;font-weight:600;color:var(--text-soft);font-family:var(--font);transition:all 0.2s}
+.photo-upload-btn:hover{border-color:var(--teal);background:var(--teal-light);color:var(--teal-dark)}
+#item-photo-input{display:none}
+.img-preview{width:100%;max-height:150px;object-fit:cover;border-radius:var(--r-sm);display:none;margin-top:10px}
+.modal-btns{display:flex;gap:8px;margin-top:1.5rem}
+.modal-btns button{flex:1;padding:12px;border-radius:var(--r-sm);cursor:pointer;font-size:14px;font-weight:700;font-family:var(--font);transition:all 0.18s}
+.btn-primary{background:var(--red);color:var(--white);border:none;box-shadow:0 3px 12px rgba(204,31,138,0.3)}
+.btn-primary:hover{background:var(--red-dark)}
+.btn-cancel{background:transparent;border:2px solid rgba(26,31,58,0.12);color:var(--text-soft)}
+.btn-cancel:hover{background:var(--cream)}
+/* backup bar */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;display:flex;gap:8px;padding:12px 16px;background:var(--white);border-top:1px solid rgba(26,31,58,0.08);box-shadow:0 -4px 20px rgba(26,31,58,0.08);z-index:100}
+.backup-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px;border-radius:var(--r-sm);font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all 0.2s;border:2px solid}
+.backup-btn.export{background:var(--teal-light);color:var(--teal-dark);border-color:var(--teal)}
+.backup-btn.export:hover{background:var(--teal);color:var(--white)}
+.backup-btn.import{background:var(--purple-light);color:var(--purple-dark);border-color:var(--purple)}
+.backup-btn.import:hover{background:var(--purple);color:var(--white)}
+#import-file-input{display:none}
+
+/* ── Detail popup ── */
+.detail-bg{position:fixed;inset:0;background:rgba(26,31,58,0.6);display:flex;align-items:flex-end;justify-content:center;z-index:300;visibility:hidden;opacity:0;transition:opacity 0.25s,visibility 0.25s;backdrop-filter:blur(4px)}
+.detail-bg.open{visibility:visible;opacity:1}
+.detail-sheet{background:var(--white);border-radius:24px 24px 0 0;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding-bottom:2rem;transform:translateY(40px);transition:transform 0.25s;-webkit-overflow-scrolling:touch}
+.detail-bg.open .detail-sheet{transform:translateY(0)}
+.detail-photo{width:100%;max-height:260px;object-fit:cover;display:block;border-radius:24px 24px 0 0}
+.detail-photo-ph{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:52px;border-radius:24px 24px 0 0}
+.detail-close{position:absolute;top:14px;right:14px;background:rgba(26,31,58,0.55);border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--white);font-size:18px;backdrop-filter:blur(4px)}
+.detail-photo-wrap{position:relative}
+.detail-body{padding:1.25rem 1.5rem 0}
+.detail-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:3px 10px;border-radius:20px;margin-bottom:0.75rem}
+.detail-name{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:4px;font-family:'Playfair Display',serif}
+.detail-designer{font-size:14px;color:var(--text-soft);margin-bottom:1rem;display:flex;align-items:center;gap:5px}
+.detail-notes{font-size:14px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem;background:var(--cream);border-radius:var(--r-sm);padding:12px 14px}
+.detail-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-mid);margin-bottom:6px}
+.detail-row i{font-size:16px;color:var(--text-soft)}
+.detail-pills{display:flex;gap:5px;flex-wrap:wrap;margin:0.75rem 0}
+.detail-actions{display:flex;gap:8px;margin-top:1.25rem;padding:0 1.5rem}
+.detail-actions button{flex:1;padding:12px;border-radius:var(--r-sm);cursor:pointer;font-size:14px;font-weight:700;font-family:var(--font);transition:all 0.18s}
+.detail-edit-btn{background:var(--teal-light);color:var(--teal-dark);border:2px solid var(--teal)}
+.detail-edit-btn:hover{background:var(--teal);color:var(--white)}
+.detail-del-btn{background:var(--red-light);color:var(--red-dark);border:2px solid var(--red)}
+.detail-del-btn:hover{background:var(--red);color:var(--white)}
+.detail-combo-imgs{display:flex;gap:3px;border-radius:24px 24px 0 0;overflow:hidden;height:160px}
+.detail-combo-img{flex:1;object-fit:cover;height:160px}
+.detail-combo-img-ph{flex:1;height:160px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.detail-fav-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:var(--gold-light);color:var(--gold-dark);margin-bottom:0.75rem}
+
+
+/* ── View toggle ── */
+.view-toggle{display:flex;gap:4px;background:var(--cream);border-radius:var(--r-sm);padding:3px}
+.view-btn{width:32px;height:32px;border:none;border-radius:var(--r-xs);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-soft);transition:all 0.15s}
+.view-btn.active{background:var(--white);color:var(--navy);box-shadow:0 1px 6px rgba(26,31,58,0.12)}
+.combos-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.combos-header .sec-header{margin-bottom:0;flex:1}
+/* grid view */
+.combos-grid-view{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.combo-grid-card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform 0.18s,box-shadow 0.18s}
+.combo-grid-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.combo-grid-card.favorited{outline:2px solid var(--gold)}
+.combo-grid-imgs{display:flex;height:90px}
+.combo-grid-img{flex:1;object-fit:cover;height:90px}
+.combo-grid-img-ph{flex:1;height:90px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.combo-grid-name{font-size:13px;font-weight:700;color:var(--navy);padding:8px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* list view */
+.combos-list-view{display:flex;flex-direction:column;gap:2px;margin-bottom:1rem}
+.combo-list-row{background:var(--white);border-radius:var(--r-sm);display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;transition:background 0.15s}
+.combo-list-row:hover{background:var(--cream)}
+.combo-list-row.favorited{background:var(--gold-light)}
+.combo-list-thumb{width:38px;height:38px;border-radius:6px;object-fit:cover;flex-shrink:0}
+.combo-list-thumb-ph{width:38px;height:38px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px}
+.combo-list-name{font-size:14px;font-weight:600;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combo-list-fav{font-size:14px;color:var(--gold);flex-shrink:0}
+
+
+/* ── Image select dropdown ── */
+.img-select{position:relative}
+.img-select-btn{width:100%;display:flex;align-items:center;gap:10px;padding:9px 12px;border:2px solid rgba(26,31,58,0.1);border-radius:var(--r-sm);background:var(--cream);cursor:pointer;font-family:var(--font);font-size:14px;color:var(--text);text-align:left;transition:border-color 0.2s}
+.img-select-btn:focus{border-color:var(--teal);background:var(--white)}
+.img-select-btn img{width:32px;height:32px;border-radius:5px;object-fit:cover;flex-shrink:0}
+.img-select-btn .sel-ph{width:32px;height:32px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.img-select-btn .sel-name{flex:1}
+.img-select-btn .sel-arrow{color:var(--text-soft);font-size:14px;flex-shrink:0}
+.img-select-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border-radius:var(--r-sm);box-shadow:var(--shadow-lg);z-index:500;max-height:200px;overflow-y:auto;border:1px solid rgba(26,31,58,0.1);display:none}
+.img-select-dropdown.open{display:block}
+.img-select-option{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;transition:background 0.15s;font-size:14px;color:var(--text)}
+.img-select-option:hover{background:var(--cream)}
+.img-select-option.selected{background:var(--teal-light);color:var(--teal-dark)}
+.img-select-option img{width:32px;height:32px;border-radius:5px;object-fit:cover;flex-shrink:0}
+.img-select-option .opt-ph{width:32px;height:32px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+
+
+/* ── Wish List ── */
+.tab.active.t-wishlist{background:linear-gradient(135deg,#ff1493,#7c4dff);color:var(--white);box-shadow:0 2px 12px rgba(204,31,138,0.4)}
+.wish-section{margin-bottom:2rem}
+.wish-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem}
+.wish-section-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--navy)}
+.wish-section-icon{width:32px;height:32px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.wish-add-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px dashed;border-radius:var(--r-sm);background:transparent;font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all 0.2s}
+.wish-item{background:var(--white);border-radius:var(--r-sm);box-shadow:var(--shadow);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;position:relative}
+.wish-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.wish-item-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.wish-item-designer{font-size:12px;color:var(--text-soft);margin-bottom:4px}
+.wish-item-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.wish-pill{font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+.wish-pill.date{background:var(--teal-light);color:var(--teal-dark)}
+.wish-pill.cost{background:var(--gold-light);color:var(--gold-dark)}
+.wish-pill.soon{background:var(--red-light);color:var(--red-dark)}
+.wish-sort-row{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.wish-sort-btn{padding:6px 12px;border:1.5px solid var(--border,rgba(26,31,58,0.15));border-radius:20px;background:transparent;font-size:12px;font-weight:600;font-family:var(--font);cursor:pointer;color:var(--text-soft);transition:all 0.15s}
+.wish-sort-btn.active{background:var(--red-light);color:var(--red-dark);border-color:var(--red)}
+.wish-empty{text-align:center;padding:1.5rem;color:var(--text-soft);font-size:13px;background:var(--white);border-radius:var(--r-sm);border:1.5px dashed rgba(26,31,58,0.1)}
+
+.tile-deco{font-size:1.4rem;line-height:1;opacity:0.15;position:fixed;pointer-events:none;z-index:0;user-select:none}
+</style>
+
+  <!-- App icons for home screen -->
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23fdf8f0'/><polygon points='50,8 65,22 35,22' fill='%2300b8a0'/><polygon points='50,22 68,22 32,22 50,15' fill='%23007a6b'/><rect x='38' y='22' width='24' height='14' rx='2' fill='%23ff1493'/><polygon points='50,42 70,54 30,54' fill='%2300b8a0'/><polygon points='50,50 73,54 27,54' fill='%23007a6b'/><rect x='33' y='54' width='34' height='18' rx='2' fill='%23ff1493'/><polygon points='50,78 78,88 22,88' fill='%2300b8a0'/><polygon points='50,84 80,88 20,88' fill='%23007a6b'/><rect x='25' y='88' width='50' height='8' rx='2' fill='%237c4dff'/></svg>">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Mahjong">
+</head>
+<body>
+<div class="tile-deco" style="top:5%;left:2%;font-size:3rem;transform:rotate(-15deg)">🀇</div>
+<div class="tile-deco" style="top:15%;right:3%;font-size:2.5rem;transform:rotate(12deg)">🀙</div>
+<div class="tile-deco" style="top:60%;right:2%;font-size:3rem;transform:rotate(20deg)">🀀</div>
+<div class="tile-deco" style="bottom:5%;right:4%;font-size:2rem;transform:rotate(-18deg)">🀁</div>
+
+<div class="wrap">
+  <div class="header">
+    <div class="header-tiles"><svg width="340" height="140" viewBox="0 0 380 140" role="img" style="display:block;margin:0 auto"><title>Decorative scrollwork and pagoda</title>
+<!-- LEFT SCROLLWORK -->
+<path d="M 10,70 Q 20,45 40,55 Q 60,65 50,80 Q 40,95 25,85" fill="none" stroke="#00b8a0" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M 25,85 Q 15,80 18,72 Q 21,64 30,68" fill="none" stroke="#00b8a0" stroke-width="1.5" stroke-linecap="round"/>
+<ellipse cx="42" cy="44" rx="7" ry="4" fill="#ff1493" transform="rotate(-30 42 44)"/>
+<ellipse cx="60" cy="60" rx="6" ry="3.5" fill="#7c4dff" transform="rotate(15 60 60)"/>
+<ellipse cx="20" cy="58" rx="5" ry="3" fill="#ff1493" transform="rotate(-50 20 58)"/>
+<circle cx="8" cy="72" r="2.5" fill="#00b8a0"/>
+<circle cx="52" cy="82" r="2" fill="#ff1493"/>
+<circle cx="35" cy="46" r="2" fill="#7c4dff"/>
+<path d="M 58,68 Q 68,60 78,68 Q 88,76 98,68 Q 108,60 118,68 Q 128,76 138,70" fill="none" stroke="#ff1493" stroke-width="1.8" stroke-linecap="round"/>
+<circle cx="78" cy="68" r="2" fill="#7c4dff"/>
+<circle cx="98" cy="68" r="2" fill="#00b8a0"/>
+<circle cx="118" cy="68" r="2" fill="#7c4dff"/>
+<!-- RIGHT SCROLLWORK -->
+<path d="M 370,70 Q 360,45 340,55 Q 320,65 330,80 Q 340,95 355,85" fill="none" stroke="#00b8a0" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M 355,85 Q 365,80 362,72 Q 359,64 350,68" fill="none" stroke="#00b8a0" stroke-width="1.5" stroke-linecap="round"/>
+<ellipse cx="338" cy="44" rx="7" ry="4" fill="#ff1493" transform="rotate(30 338 44)"/>
+<ellipse cx="320" cy="60" rx="6" ry="3.5" fill="#7c4dff" transform="rotate(-15 320 60)"/>
+<ellipse cx="360" cy="58" rx="5" ry="3" fill="#ff1493" transform="rotate(50 360 58)"/>
+<circle cx="372" cy="72" r="2.5" fill="#00b8a0"/>
+<circle cx="328" cy="82" r="2" fill="#ff1493"/>
+<circle cx="345" cy="46" r="2" fill="#7c4dff"/>
+<path d="M 322,68 Q 312,60 302,68 Q 292,76 282,68 Q 272,60 262,68 Q 252,76 242,70" fill="none" stroke="#ff1493" stroke-width="1.8" stroke-linecap="round"/>
+<circle cx="302" cy="68" r="2" fill="#7c4dff"/>
+<circle cx="282" cy="68" r="2" fill="#00b8a0"/>
+<circle cx="262" cy="68" r="2" fill="#7c4dff"/>
+<!-- PAGODA wider base -->
+<line x1="190" y1="8" x2="190" y2="22" stroke="#cc1f8a" stroke-width="2" stroke-linecap="round"/>
+<circle cx="190" cy="6" r="3" fill="#ff1493"/>
+<polygon points="172,30 190,18 208,30" fill="#00b8a0"/>
+<polygon points="169,33 190,23 211,33" fill="#007a6b"/>
+<circle cx="169" cy="33" r="2" fill="#ff1493"/>
+<circle cx="211" cy="33" r="2" fill="#ff1493"/>
+<rect x="178" y="33" width="24" height="16" rx="2" fill="#ff1493"/>
+<rect x="184" y="37" width="12" height="10" rx="2" fill="#96146a"/>
+<polygon points="160,55 190,43 220,55" fill="#00b8a0"/>
+<polygon points="156,59 190,47 224,59" fill="#007a6b"/>
+<circle cx="156" cy="59" r="2.5" fill="#7c4dff"/>
+<circle cx="224" cy="59" r="2.5" fill="#7c4dff"/>
+<line x1="163" y1="59" x2="163" y2="65" stroke="#f5a623" stroke-width="1.2"/>
+<ellipse cx="163" cy="68" rx="3.5" ry="4" fill="#ff1493"/>
+<line x1="217" y1="59" x2="217" y2="65" stroke="#f5a623" stroke-width="1.2"/>
+<ellipse cx="217" cy="68" rx="3.5" ry="4" fill="#ff1493"/>
+<rect x="170" y="59" width="40" height="18" rx="2" fill="#fce8f5"/>
+<rect x="176" y="63" width="7" height="9" rx="2" fill="#7c4dff"/>
+<rect x="197" y="63" width="7" height="9" rx="2" fill="#7c4dff"/>
+<rect x="186" y="65" width="8" height="10" rx="5" fill="#96146a"/>
+<polygon points="140,88 190,73 240,88" fill="#00b8a0"/>
+<polygon points="134,93 190,77 246,93" fill="#007a6b"/>
+<circle cx="134" cy="93" r="3" fill="#ff1493"/>
+<circle cx="246" cy="93" r="3" fill="#ff1493"/>
+<line x1="146" y1="93" x2="146" y2="101" stroke="#f5a623" stroke-width="1.2"/>
+<ellipse cx="146" cy="105" rx="4" ry="5" fill="#7c4dff"/>
+<line x1="234" y1="93" x2="234" y2="101" stroke="#f5a623" stroke-width="1.2"/>
+<ellipse cx="234" cy="105" rx="4" ry="5" fill="#7c4dff"/>
+<rect x="158" y="93" width="64" height="24" rx="2" fill="#fce8f5"/>
+<rect x="166" y="99" width="9" height="12" rx="2" fill="#7c4dff"/>
+<rect x="205" y="99" width="9" height="12" rx="2" fill="#7c4dff"/>
+<rect x="183" y="100" width="14" height="16" rx="7" fill="#cc1f8a"/>
+<rect x="164" y="117" width="52" height="7" rx="2" fill="#7c4dff"/>
+<rect x="154" y="124" width="72" height="7" rx="2" fill="#5a2fd4"/>
+<rect x="144" y="131" width="92" height="6" rx="2" fill="#ede7ff"/>
+</svg></div>
+    <h1>Stephanie's Mahjong Collection</h1>
+    <p>Track your mats, tile sets &amp; favorite combos</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab t-combos active" id="tab-btn-combos"><span style="display:inline-flex;align-items:center;line-height:1"><svg width="16" height="16" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg"><polygon points="190,40 260,100 120,100" fill="#00b8a0"/><rect x="150" y="100" width="80" height="50" fill="#ff1493"/><polygon points="190,160 280,210 100,210" fill="#00b8a0"/><rect x="130" y="210" width="120" height="55" fill="#ff1493"/><polygon points="190,270 310,320 70,320" fill="#00b8a0"/><rect x="100" y="320" width="180" height="40" fill="#7c4dff"/></svg></span> Combos <span class="tab-badge" id="combo-badge"></span></button>
+    <button class="tab t-mats" id="tab-btn-mats"><i class="ti ti-layout-board"></i> Mats <span class="tab-badge" id="mat-badge"></span></button>
+    <button class="tab t-tiles" id="tab-btn-tiles"><i class="ti ti-squares"></i> Tiles <span class="tab-badge" id="tile-badge"></span></button>
+    <button class="tab t-cloths" id="tab-btn-cloths"><i class="ti ti-table"></i> Tablecloths <span class="tab-badge" id="cloth-badge"></span></button>
+    <button class="tab t-racks" id="tab-btn-racks"><span style="display:inline-flex;align-items:center;line-height:1"><svg width="14" height="17" viewBox="0 0 70 90" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="66" height="86" rx="8" fill="none" stroke="currentColor" stroke-width="5"/><rect x="10" y="10" width="50" height="70" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="35" cy="45" r="12" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="35" cy="45" r="4" fill="currentColor"/></span> Racks <span class="tab-badge" id="rack-badge"></span></button>
+    <button class="tab t-accessories" id="tab-btn-accessories"><i class="ti ti-sparkles"></i> Extras <span class="tab-badge" id="accessory-badge"></span></button>
+    <button class="tab t-wishlist" id="tab-btn-wishlist" onclick="showTab('wishlist')"><i class="ti ti-wand"></i> Wish List! <span class="tab-badge" id="wishlist-badge"></span></button>
+  </div>
+
+  <!-- COMBOS -->
+  <div id="tab-combos" class="section active">
+    <div class="combos-header">
+      <div class="sec-header"><div class="sec-icon red"><svg width="22" height="22" viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg"><polygon points="190,40 260,100 120,100" fill="#00b8a0"/><rect x="150" y="100" width="80" height="50" fill="#ff1493"/><polygon points="190,160 280,210 100,210" fill="#00b8a0"/><rect x="130" y="210" width="120" height="55" fill="#ff1493"/><polygon points="190,270 310,320 70,320" fill="#00b8a0"/><rect x="100" y="320" width="180" height="40" fill="#7c4dff"/></svg></div><div><h2>Combinations</h2><p>Your complete table setups</p></div></div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="view-btn-detail" title="Detail view"><i class="ti ti-layout-list"></i></button>
+        <button class="view-btn" id="view-btn-grid" title="Grid view"><i class="ti ti-layout-grid"></i></button>
+        <button class="view-btn" id="view-btn-list" title="List view"><i class="ti ti-list"></i></button>
+      </div>
+    </div>
+    <div class="search-wrap"><i class="ti ti-search s-icon"></i><input type="text" id="combo-search" placeholder="Search combinations…"></div>
+    <div class="filter-bar">
+      <div class="filter-section-label">Filter by usage</div>
+      <div class="filter-toggle" id="toggle-never"><div class="toggle-track"></div><span>Show only never used</span></div>
+      <div class="filter-divider"></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="filter-toggle" id="toggle-days"><div class="toggle-track"></div><span>Not used in the last</span></div>
+        <div class="days-val" id="days-val">30 days</div>
+      </div>
+      <div class="days-slider-row" id="days-slider-row" style="display:none">
+        <input type="range" id="days-slider" min="7" max="365" step="1" value="30">
+        <span style="font-size:12px;color:var(--text-soft)">7 – 365 days</span>
+      </div>
+    </div>
+    <div class="count-label" id="combo-count"></div>
+    <div class="combos-list" id="combos-list"></div>
+    <div class="empty" id="combos-empty" style="display:none"><div class="empty-icon red"><i class="ti ti-puzzle"></i></div><h3>No combinations yet</h3><p>Add items to your collections,<br>then create your first combo below.</p></div>
+    <button class="add-btn red" id="new-combo-btn"><i class="ti ti-plus"></i> New Combination</button>
+  </div>
+
+  <!-- MATS -->
+  <div id="tab-mats" class="section">
+    <div class="sec-header"><div class="sec-icon teal"><i class="ti ti-layout-board"></i></div><div><h2>My Mats</h2><p>Table mats collection</p></div></div>
+    <button class="add-btn teal" id="new-mat-btn"><i class="ti ti-plus"></i> Add a Mat</button>
+    <div class="grid" id="mats-grid"></div>
+    <div class="empty" id="mats-empty" style="display:none"><div class="empty-icon teal"><i class="ti ti-layout-board"></i></div><h3>No mats yet</h3><p>Add your first mat to get started.</p></div>
+  </div>
+
+  <!-- TILES -->
+  <div id="tab-tiles" class="section">
+    <div class="sec-header"><div class="sec-icon purple"><i class="ti ti-squares"></i></div><div><h2>My Tile Sets</h2><p>Tile sets collection</p></div></div>
+    <button class="add-btn purple" id="new-tile-btn"><i class="ti ti-plus"></i> Add a Tile Set</button>
+    <div class="grid" id="tiles-grid"></div>
+    <div class="empty" id="tiles-empty" style="display:none"><div class="empty-icon purple"><i class="ti ti-squares"></i></div><h3>No tile sets yet</h3><p>Add your first tile set to get started.</p></div>
+  </div>
+
+  <!-- TABLECLOTHS -->
+  <div id="tab-cloths" class="section">
+    <div class="sec-header"><div class="sec-icon pink"><i class="ti ti-table"></i></div><div><h2>My Tablecloths</h2><p>Tablecloths collection</p></div></div>
+    <button class="add-btn pink" id="new-cloth-btn"><i class="ti ti-plus"></i> Add a Tablecloth</button>
+    <div class="grid" id="cloths-grid"></div>
+    <div class="empty" id="cloths-empty" style="display:none"><div class="empty-icon pink"><i class="ti ti-table"></i></div><h3>No tablecloths yet</h3><p>Add your first tablecloth to get started.</p></div>
+  </div>
+
+  <!-- RACKS -->
+  <div id="tab-racks" class="section">
+    <div class="sec-header"><div class="sec-icon orange"><span style="display:inline-flex;align-items:center;line-height:1"><svg width="22" height="26" viewBox="0 0 70 90" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="66" height="86" rx="8" fill="none" stroke="currentColor" stroke-width="5"/><rect x="10" y="10" width="50" height="70" rx="4" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="35" cy="45" r="12" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="35" cy="45" r="4" fill="currentColor"/></span></div><div><h2>My Racks</h2><p>Tile racks collection</p></div></div>
+    <button class="add-btn orange" id="new-rack-btn"><i class="ti ti-plus"></i> Add a Rack</button>
+    <div class="grid" id="racks-grid"></div>
+    <div class="empty" id="racks-empty" style="display:none"><div class="empty-icon orange"><i class="ti ti-armchair"></i></div><h3>No racks yet</h3><p>Add your first rack to get started.</p></div>
+  </div>
+
+  <!-- ACCESSORIES -->
+  <div id="tab-accessories" class="section">
+    <div class="sec-header"><div class="sec-icon green"><i class="ti ti-sparkles"></i></div><div><h2>My Accessories</h2><p>Extra accessories collection</p></div></div>
+    <button class="add-btn green" id="new-accessory-btn"><i class="ti ti-plus"></i> Add an Accessory</button>
+    <div class="grid" id="accessories-grid"></div>
+    <div class="empty" id="accessories-empty" style="display:none"><div class="empty-icon green"><i class="ti ti-sparkles"></i></div><h3>No accessories yet</h3><p>Add your first accessory to get started.</p></div>
+  </div>
+
+  <!-- WISH LIST -->
+  <div id="tab-wishlist" class="section">
+    <div class="sec-header">
+      <div class="sec-icon red" style="background:linear-gradient(135deg,var(--red-light),var(--purple-light))"><i class="ti ti-wand" style="color:var(--red)"></i></div>
+      <div><h2>Wish List! ✨</h2><p>Items you want to buy</p></div>
+    </div>
+    <div class="search-wrap" style="margin-bottom:0.75rem">
+      <i class="ti ti-search s-icon"></i>
+      <input type="text" id="wish-search" placeholder="Search wish list…">
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem">
+      <span style="font-size:12px;font-weight:600;color:var(--text-soft);align-self:center">Sort:</span>
+      <button class="wish-sort-btn active" id="wsort-date">Release Date</button>
+      <button class="wish-sort-btn" id="wsort-name">Name</button>
+      <button class="wish-sort-btn" id="wsort-cost">Cost</button>
+    </div>
+    <div id="wishlist-container">
+      <div id="wish-static-mats" style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:10px 14px;background:var(--white);border-radius:12px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:8px;background:var(--teal-light);display:flex;align-items:center;justify-content:center"><i class="ti ti-layout-board" style="color:var(--teal);font-size:15px"></i></div><span style="font-size:15px;font-weight:700;color:var(--navy)">Mats</span></div>
+          <button id="wbtn-mat" style="padding:6px 14px;border:2px dashed var(--teal);border-radius:10px;background:transparent;font-size:13px;font-weight:700;color:var(--teal);font-family:var(--font);cursor:pointer"><i class="ti ti-plus"></i> Add</button>
+        </div>
+        <div id="wish-items-mat" style="padding:0 4px"></div>
+      </div>
+      <div id="wish-static-tiles" style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:10px 14px;background:var(--white);border-radius:12px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:8px;background:var(--purple-light);display:flex;align-items:center;justify-content:center"><i class="ti ti-squares" style="color:var(--purple);font-size:15px"></i></div><span style="font-size:15px;font-weight:700;color:var(--navy)">Tile Sets</span></div>
+          <button id="wbtn-tile" style="padding:6px 14px;border:2px dashed var(--purple);border-radius:10px;background:transparent;font-size:13px;font-weight:700;color:var(--purple);font-family:var(--font);cursor:pointer"><i class="ti ti-plus"></i> Add</button>
+        </div>
+        <div id="wish-items-tile" style="padding:0 4px"></div>
+      </div>
+      <div id="wish-static-racks" style="margin-bottom:1.5rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:10px 14px;background:var(--white);border-radius:12px;box-shadow:var(--shadow)">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:8px;background:var(--orange-light);display:flex;align-items:center;justify-content:center"><i class="ti ti-armchair" style="color:var(--orange);font-size:15px"></i></div><span style="font-size:15px;font-weight:700;color:var(--navy)">Racks</span></div>
+          <button id="wbtn-rack" style="padding:6px 14px;border:2px dashed var(--orange);border-radius:10px;background:transparent;font-size:13px;font-weight:700;color:var(--orange);font-family:var(--font);cursor:pointer"><i class="ti ti-plus"></i> Add</button>
+        </div>
+        <div id="wish-items-rack" style="padding:0 4px"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ITEM MODAL -->
+<div class="modal-bg" id="item-modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon teal" id="item-modal-icon"><i class="ti ti-layout-board" id="item-modal-icon-i"></i></div>
+      <div class="modal-title" id="item-modal-title">Add Item</div>
+    </div>
+    <div class="field"><label for="item-name">Name</label><input type="text" id="item-name" placeholder="Name"></div>
+    <div class="field"><label for="item-designer">Designer</label><input type="text" id="item-designer" placeholder="e.g. Linda Li"></div>
+    <div class="field"><label>Photo</label>
+      <button type="button" class="photo-upload-btn" id="photo-upload-btn"><i class="ti ti-camera-plus"></i> Tap to upload a photo</button>
+      <input type="file" id="item-photo-input" accept="image/*">
+      <img id="item-photo-preview" class="img-preview" alt="preview">
+    </div>
+    <div class="field"><label for="item-notes">Notes</label><textarea id="item-notes" placeholder="Color, style, condition…"></textarea></div>
+    <div class="modal-btns">
+      <button type="button" class="btn-cancel" id="item-modal-cancel">Cancel</button>
+      <button type="button" class="btn-primary" id="item-modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMBO MODAL -->
+<div class="modal-bg" id="combo-modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon red"><i class="ti ti-puzzle"></i></div>
+      <div class="modal-title" id="combo-modal-title">New Combination</div>
+    </div>
+    <div class="field"><label for="combo-name">Combination Name</label><input type="text" id="combo-name" placeholder="e.g. Game Night Favourite"></div>
+
+    <div class="combo-section-label">Required</div>
+    <div class="field"><label>Mat</label><div id="combo-mat"></div></div>
+    <div class="field"><label>Tile Set</label><div id="combo-tile"></div></div>
+    <div class="field"><label>Tablecloth</label><div id="combo-cloth"></div></div>
+
+    <div class="combo-section-label">Optional</div>
+    <div class="field">
+      <label>Racks <span style="font-size:11px;color:var(--text-soft);font-weight:400">(add as many as you like)</span></label>
+      <div id="rack-rows"></div>
+      <button type="button" class="add-rack-btn" id="add-rack-btn"><i class="ti ti-plus"></i> Add a rack</button>
+    </div>
+    <div class="field"><label>Accessory</label><div id="combo-accessory"></div></div>
+
+    <div class="combo-section-label" style="margin-top:0.5rem">Notes & date</div>
+    <div class="field"><label for="combo-notes">Notes</label><textarea id="combo-notes" placeholder="Why you love this combo…"></textarea></div>
+    <div class="field"><label for="combo-date">Date last used</label><input type="date" id="combo-date"></div>
+    <div class="modal-btns">
+      <button type="button" class="btn-cancel" id="combo-modal-cancel">Cancel</button>
+      <button type="button" class="btn-primary" id="combo-modal-save">Save Combination</button>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- DETAIL POPUP -->
+<div class="detail-bg" id="detail-bg">
+  <div class="detail-sheet" id="detail-sheet">
+    <div id="detail-content"></div>
+    <div class="detail-actions" id="detail-actions"></div>
+  </div>
+</div>
+
+<!-- WISH ITEM MODAL -->
+<div class="modal-bg" id="wish-modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-icon red" id="wish-modal-icon"><i class="ti ti-wand" id="wish-modal-icon-i"></i></div>
+      <div class="modal-title" id="wish-modal-title">Add to Wish List</div>
+    </div>
+    <div class="field"><label for="wish-name">Name</label><input type="text" id="wish-name" placeholder="e.g. Jade Dynasty Set"></div>
+    <div class="field"><label>Photo</label>
+      <button type="button" class="photo-upload-btn" id="wish-photo-btn"><i class="ti ti-camera-plus"></i> Tap to upload a photo</button>
+      <input type="file" id="wish-photo-input" accept="image/*" style="display:none">
+      <img id="wish-photo-preview" class="img-preview" alt="preview" style="display:none">
+    </div>
+    <div class="field"><label for="wish-designer">Designer</label><input type="text" id="wish-designer" placeholder="e.g. Linda Li"></div>
+    <div class="field"><label for="wish-release">Expected Release Date</label><input type="date" id="wish-release"></div>
+    <div class="field"><label for="wish-cost">Expected Cost</label><input type="text" id="wish-cost" placeholder="e.g. $120"></div>
+    <div class="field"><label for="wish-notes">Notes</label><textarea id="wish-notes" placeholder="Where to buy, why you want it…"></textarea></div>
+    <div class="modal-btns">
+      <button type="button" class="btn-cancel" id="wish-modal-cancel">Cancel</button>
+      <button type="button" class="btn-primary" id="wish-modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIXED BOTTOM BACKUP BAR -->
+<div class="bottom-bar">
+  <button class="backup-btn export" id="export-btn"><i class="ti ti-download"></i> Export Data</button>
+  <button class="backup-btn import" id="import-btn"><i class="ti ti-upload"></i> Import Data</button>
+  <input type="file" id="import-file-input" accept=".json">
+</div>
+
+<script>
+
+// ── State ──────────────────────────────────────────────
+let state = { mats:[], tiles:[], cloths:[], racks:[], accessories:[], combos:[], favs:{} };
+let itemEditId = null;
+let itemType = 'mat';
+let comboEditId = null;
+let filterNever = false;
+let filterDays = false;
+let comboView = 'detail'; // 'detail' | 'grid' | 'list'
+let pendingPhoto = null;
+
+// ── Supabase Storage ──────────────────────────────────
+const SUPABASE_URL = 'https://roeuahrhqshwhbtmqwtg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_6_DivpGVt6mdob1SrX5L8g_Vd6QOACf';
+const RECORD_ID = 'stephanie';
+
+async function save(){
+  try{
+    const response = await fetch(SUPABASE_URL + '/rest/v1/collection', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({ id: RECORD_ID, data: JSON.stringify(state) })
+    });
+    if(!response.ok) console.warn('Save failed:', response.status);
+  }catch(e){ console.warn('Save error:', e); }
+}
+
+async function load(){
+  try{
+    const response = await fetch(SUPABASE_URL + '/rest/v1/collection?id=eq.' + RECORD_ID, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY
+      }
+    });
+    if(response.ok){
+      const rows = await response.json();
+      if(rows.length > 0){
+        const p = JSON.parse(rows[0].data);
+        state = {mats:[],tiles:[],cloths:[],racks:[],accessories:[],combos:[],favs:{},wishlist:[], ...p};
+      }
+    }
+  }catch(e){ console.warn('Load error:', e); }
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+// ── Type config ────────────────────────────────────────
+const TYPE_CONFIG = {
+  mat:       { label:'Mat',         plural:'mats',        color:'teal',   icon:'ti-layout-board', ph:'ph-teal'   },
+  tile:      { label:'Tile Set',    plural:'tiles',       color:'purple', icon:'ti-squares',      ph:'ph-purple' },
+  cloth:     { label:'Tablecloth',  plural:'cloths',      color:'pink',   icon:'ti-table',        ph:'ph-pink'   },
+  rack:      { label:'Rack',        plural:'racks',       color:'orange', icon:'ti-armchair',     ph:'ph-orange' },
+  accessory: { label:'Accessory',   plural:'accessories', color:'green',  icon:'ti-sparkles',     ph:'ph-green'  },
+};
+
+function getArr(type){ return state[TYPE_CONFIG[type].plural]; }
+
+// ── Tabs ───────────────────────────────────────────────
+const TAB_NAMES = ['combos','mats','tiles','cloths','racks','accessories','wishlist'];
+TAB_NAMES.forEach(name=>{
+  try {
+    const el = document.getElementById('tab-btn-'+name);
+    if(el) el.addEventListener('click', ()=>showTab(name));
+  } catch(e){ console.warn('Tab error:',name,e); }
+});
+function showTab(name){
+  TAB_NAMES.forEach(t=>{
+    try {
+      const btn=document.getElementById('tab-btn-'+t); if(btn) btn.classList.toggle('active', t===name);
+      const tab=document.getElementById('tab-'+t); if(tab) tab.classList.toggle('active', t===name);
+    } catch(e){}
+  });
+  if(name==='combos') renderCombos();
+  else if(name==='wishlist'){ if(!state.wishlist) state.wishlist=[]; renderWishlist(); }
+  else renderItems(name==='mats'?'mat':name==='tiles'?'tile':name==='cloths'?'cloth':name==='racks'?'rack':'accessory');
+}
+
+// ── Badges ─────────────────────────────────────────────
+function updateBadges(){
+  document.getElementById('mat-badge').textContent = state.mats.length||'';
+  document.getElementById('tile-badge').textContent = state.tiles.length||'';
+  document.getElementById('cloth-badge').textContent = state.cloths.length||'';
+  document.getElementById('rack-badge').textContent = state.racks.length||'';
+  document.getElementById('accessory-badge').textContent = state.accessories.length||'';
+  document.getElementById('combo-badge').textContent = state.combos.length||'';
+  document.getElementById('wishlist-badge').textContent = (state.wishlist||[]).length||'';
+}
+
+// ── Item Modal ─────────────────────────────────────────
+const itemModalBg = document.getElementById('item-modal-bg');
+const itemPhotoInput = document.getElementById('item-photo-input');
+const itemPhotoPreview = document.getElementById('item-photo-preview');
+
+function openItemModal(type, editId){
+  itemType = type;
+  itemEditId = editId || null;
+  pendingPhoto = null;
+  const cfg = TYPE_CONFIG[type];
+  const arr = getArr(type);
+  const existing = editId ? arr.find(x=>x.id===editId) : null;
+  document.getElementById('item-modal-icon').className = 'modal-icon '+cfg.color;
+  document.getElementById('item-modal-icon-i').className = 'ti '+cfg.icon;
+  document.getElementById('item-modal-title').textContent = (existing?'Edit ':'Add ')+cfg.label;
+  document.getElementById('item-name').value = existing?.name||'';
+  document.getElementById('item-name').placeholder = 'e.g. My favourite '+cfg.label.toLowerCase();
+  document.getElementById('item-designer').value = existing?.designer||'';
+  document.getElementById('item-notes').value = existing?.notes||'';
+  itemPhotoPreview.src = existing?.photo||'';
+  itemPhotoPreview.style.display = existing?.photo?'block':'none';
+  itemPhotoInput.value = '';
+  itemModalBg.classList.add('open');
+  setTimeout(()=>document.getElementById('item-name').focus(),100);
+}
+function closeItemModal(){ itemModalBg.classList.remove('open'); }
+
+document.getElementById('item-modal-cancel').addEventListener('click', closeItemModal);
+itemModalBg.addEventListener('click', e=>{ if(e.target===itemModalBg) closeItemModal(); });
+document.getElementById('photo-upload-btn').addEventListener('click', ()=>itemPhotoInput.click());
+itemPhotoInput.addEventListener('change', function(){
+  const file=this.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{ pendingPhoto=e.target.result; itemPhotoPreview.src=pendingPhoto; itemPhotoPreview.style.display='block'; };
+  reader.readAsDataURL(file);
+});
+document.getElementById('item-modal-save').addEventListener('click', function(){
+  const name=document.getElementById('item-name').value.trim();
+  if(!name){ alert('Please enter a name.'); return; }
+  const designer=document.getElementById('item-designer').value.trim();
+  const notes=document.getElementById('item-notes').value.trim();
+  const arr=getArr(itemType);
+  const existing=itemEditId?arr.find(x=>x.id===itemEditId):null;
+  const photo=pendingPhoto||existing?.photo||'';
+  if(itemEditId){ if(existing){ existing.name=name; existing.designer=designer; existing.notes=notes; existing.photo=photo; } }
+  else { arr.push({id:uid(),name,designer,notes,photo}); }
+  save(); closeItemModal(); renderItems(itemType); updateBadges();
+});
+
+// wire up add buttons
+document.getElementById('new-mat-btn').addEventListener('click',()=>openItemModal('mat'));
+document.getElementById('new-tile-btn').addEventListener('click',()=>openItemModal('tile'));
+document.getElementById('new-cloth-btn').addEventListener('click',()=>openItemModal('cloth'));
+document.getElementById('new-rack-btn').addEventListener('click',()=>openItemModal('rack'));
+document.getElementById('new-accessory-btn').addEventListener('click',()=>openItemModal('accessory'));
+
+// ── Render Items ───────────────────────────────────────
+function renderItems(type){
+  const cfg=TYPE_CONFIG[type];
+  const items=getArr(type);
+  const gridId=cfg.plural+'-grid';
+  const emptyId=cfg.plural+'-empty';
+  const grid=document.getElementById(gridId);
+  const empty=document.getElementById(emptyId);
+  updateBadges();
+  if(!items.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  grid.innerHTML='';
+  items.forEach(item=>{
+    const card=document.createElement('div');
+    card.className='item-card';
+    card.innerHTML=`
+      ${item.photo?`<img class="item-img" src="${item.photo}" alt="${item.name}">`:`<div class="item-img-placeholder ${cfg.ph}"><i class="ti ${cfg.icon}" style="font-size:36px;color:var(--${cfg.color})"></i></div>`}
+      <span class="item-tag ${cfg.color}"><i class="ti ${cfg.icon}" style="font-size:10px"></i> ${cfg.label}</span>
+      <div class="item-body">
+        <div class="item-name" title="${item.name}">${item.name}</div>
+        ${item.designer?`<div class="item-designer"><i class="ti ti-pencil" style="font-size:10px"></i> ${item.designer}</div>`:''}
+        ${item.notes?`<div class="item-notes">${item.notes}</div>`:''}
+      </div>
+      <div class="item-actions">
+        <button class="act-btn edit"><i class="ti ti-edit"></i> Edit</button>
+        <button class="act-btn danger"><i class="ti ti-trash"></i> Delete</button>
+      </div>`;
+    card.querySelector('.act-btn.edit').addEventListener('click',e=>{ e.stopPropagation(); openItemModal(type,item.id); });
+    card.querySelector('.act-btn.danger').addEventListener('click',e=>{ e.stopPropagation(); deleteItem(type,item.id); });
+    card.addEventListener('click',()=>openItemDetail(type,item.id));
+    grid.appendChild(card);
+  });
+}
+
+function deleteItem(type,id){
+  const arr=getArr(type);
+  const idx=arr.findIndex(x=>x.id===id);
+  if(idx>-1) arr.splice(idx,1);
+  save(); renderItems(type); renderCombos(); updateBadges();
+}
+
+// ── Combo Modal ────────────────────────────────────────
+const comboModalBg=document.getElementById('combo-modal-bg');
+let rackRows=[];
+
+function buildRackOption(rackId){
+  const row=document.createElement('div');
+  row.className='rack-row';
+  // wrapper div for the img-select
+  const selWrap=document.createElement('div');
+  selWrap.style.flex='1';
+  const selId='rack-sel-'+uid();
+  selWrap.id=selId;
+  row.appendChild(selWrap);
+  // remove button
+  const btn=document.createElement('button');
+  btn.type='button'; btn.className='rack-remove'; btn.innerHTML='<i class="ti ti-x"></i>';
+  btn.addEventListener('click',()=>{ row.remove(); rackRows=rackRows.filter(r=>r!==row); });
+  row.appendChild(btn);
+  rackRows.push(row);
+  // build img-select after appending so the element exists
+  setTimeout(()=>buildImgSelect(selId, state.racks, TYPE_CONFIG['rack'], rackId||state.racks[0]?.id||'', true), 0);
+  row.getValue=()=>{ const el=document.getElementById(selId); return el?.getValue?.()||''; };
+  return row;
+}
+
+function openComboModal(editId){
+  if(!state.mats.length||!state.tiles.length||!state.cloths.length){
+    alert('Add at least one mat, one tile set, and one tablecloth first.');
+    return;
+  }
+  comboEditId=editId||null;
+  const existing=editId?state.combos.find(c=>c.id===editId):null;
+  document.getElementById('combo-modal-title').textContent=existing?'Edit Combination':'New Combination';
+  document.getElementById('combo-name').value=existing?.name||'';
+  document.getElementById('combo-notes').value=existing?.notes||'';
+  document.getElementById('combo-date').value=existing?.lastUsed||'';
+
+  // required image selects
+  buildImgSelect('combo-mat', state.mats, TYPE_CONFIG['mat'], existing?.matId||'', true);
+  buildImgSelect('combo-tile', state.tiles, TYPE_CONFIG['tile'], existing?.tileId||'', true);
+  buildImgSelect('combo-cloth', state.cloths, TYPE_CONFIG['cloth'], existing?.clothId||'', true);
+  buildImgSelect('combo-accessory', state.accessories, TYPE_CONFIG['accessory'], existing?.accessoryId||'', false);
+
+  // rack rows
+  rackRows=[];
+  const rackContainer=document.getElementById('rack-rows');
+  rackContainer.innerHTML='';
+  if(state.racks.length){
+    (existing?.rackIds||[]).forEach(rid=>rackContainer.appendChild(buildRackOption(rid)));
+  }
+  document.getElementById('add-rack-btn').style.display=state.racks.length?'flex':'none';
+
+  comboModalBg.classList.add('open');
+  setTimeout(()=>document.getElementById('combo-name').focus(),100);
+}
+function closeComboModal(){ comboModalBg.classList.remove('open'); }
+
+document.getElementById('combo-modal-cancel').addEventListener('click',closeComboModal);
+comboModalBg.addEventListener('click',e=>{ if(e.target===comboModalBg) closeComboModal(); });
+document.getElementById('add-rack-btn').addEventListener('click',()=>{
+  if(!state.racks.length) return;
+  document.getElementById('rack-rows').appendChild(buildRackOption(null));
+});
+document.getElementById('combo-modal-save').addEventListener('click',function(){
+  const name=document.getElementById('combo-name').value.trim();
+  if(!name){ alert('Please enter a name.'); return; }
+  const matId=document.getElementById('combo-mat').getValue();
+  const tileId=document.getElementById('combo-tile').getValue();
+  const clothId=document.getElementById('combo-cloth').getValue();
+  const accessoryId=document.getElementById('combo-accessory').getValue()||null;
+  const rackIds=rackRows.map(r=>r.getValue()).filter(Boolean);
+  const notes=document.getElementById('combo-notes').value.trim();
+  const lastUsed=document.getElementById('combo-date').value||null;
+  if(!matId||!tileId||!clothId){ alert('Please select a mat, tile set, and tablecloth.'); return; }
+  if(comboEditId){
+    const c=state.combos.find(x=>x.id===comboEditId);
+    if(c){ Object.assign(c,{name,matId,tileId,clothId,accessoryId,rackIds,notes,lastUsed}); }
+  } else {
+    state.combos.push({id:uid(),name,matId,tileId,clothId,accessoryId,rackIds,notes,lastUsed});
+  }
+  save(); closeComboModal(); renderCombos(); updateBadges();
+});
+document.getElementById('new-combo-btn').addEventListener('click',()=>openComboModal());
+
+
+
+// ── Image Select helpers ───────────────────────────────
+function buildImgSelect(containerId, items, cfg, selectedId, required){
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  container.className = 'img-select';
+
+  let currentId = selectedId || (required ? (items[0]?.id||'') : '');
+
+  function renderBtn(){
+    const sel = items.find(x=>x.id===currentId);
+    const ph = `<div class="sel-ph ph-${cfg.color}" style="background:var(--${cfg.color}-light)"><i class="ti ${cfg.icon}" style="font-size:14px;color:var(--${cfg.color})"></i></div>`;
+    btn.innerHTML = `${sel?.photo?`<img src="${sel.photo}" alt="${sel.name}">`:(sel?ph:(required?ph:`<div class="sel-ph" style="background:var(--cream);border-radius:5px"><i class="ti ti-minus" style="font-size:12px;color:var(--text-soft)"></i></div>`))}
+      <span class="sel-name">${sel?.name||(required?'Select…':'None')}</span>
+      <i class="ti ti-chevron-down sel-arrow"></i>`;
+  }
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'img-select-btn';
+  renderBtn();
+
+  const dropdown = document.createElement('div');
+  dropdown.className = 'img-select-dropdown';
+
+  function buildOptions(){
+    dropdown.innerHTML = '';
+    const allItems = required ? items : [{id:'',name:'None',photo:''},...items];
+    allItems.forEach(item=>{
+      const opt = document.createElement('div');
+      opt.className = 'img-select-option'+(currentId===item.id?' selected':'');
+      const ph = `<div class="opt-ph ph-${cfg.color}" style="background:var(--${cfg.color}-light)"><i class="ti ${cfg.icon}" style="font-size:14px;color:var(--${cfg.color})"></i></div>`;
+      opt.innerHTML = `${item.photo?`<img src="${item.photo}" alt="${item.name}">`:(item.id?ph:`<div class="opt-ph" style="background:var(--cream)"><i class="ti ti-minus" style="font-size:12px;color:var(--text-soft)"></i></div>`)}
+        <span>${item.name}</span>`;
+      opt.addEventListener('click',()=>{
+        currentId = item.id;
+        renderBtn();
+        buildOptions();
+        dropdown.classList.remove('open');
+      });
+      dropdown.appendChild(opt);
+    });
+  }
+  buildOptions();
+
+  btn.addEventListener('click',e=>{ e.stopPropagation(); dropdown.classList.toggle('open'); });
+  document.addEventListener('click',()=>dropdown.classList.remove('open'));
+
+  container.getValue = ()=>currentId;
+  container.appendChild(btn);
+  container.appendChild(dropdown);
+}
+
+// ── View toggle ────────────────────────────────────────
+['detail','grid','list'].forEach(v=>{
+  document.getElementById('view-btn-'+v).addEventListener('click',()=>{
+    comboView = v;
+    ['detail','grid','list'].forEach(x=>document.getElementById('view-btn-'+x).classList.toggle('active', x===v));
+    renderCombos();
+  });
+});
+
+// ── Filters ────────────────────────────────────────────
+document.getElementById('toggle-never').addEventListener('click',function(){
+  filterNever=!filterNever;
+  if(filterNever){ filterDays=false; document.getElementById('toggle-days').classList.remove('on'); document.getElementById('days-slider-row').style.display='none'; }
+  this.classList.toggle('on',filterNever); renderCombos();
+});
+document.getElementById('toggle-days').addEventListener('click',function(){
+  filterDays=!filterDays;
+  if(filterDays){ filterNever=false; document.getElementById('toggle-never').classList.remove('on'); }
+  this.classList.toggle('on',filterDays);
+  document.getElementById('days-slider-row').style.display=filterDays?'flex':'none';
+  renderCombos();
+});
+document.getElementById('days-slider').addEventListener('input',function(){ document.getElementById('days-val').textContent=this.value+' days'; renderCombos(); });
+document.getElementById('combo-search').addEventListener('input',renderCombos);
+
+// ── Render Combos ──────────────────────────────────────
+function daysSince(d){ if(!d)return null; return Math.floor((Date.now()-new Date(d).getTime())/(864e5)); }
+function fmtDate(d){ if(!d)return ''; return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+
+function renderCombos(){
+  const q=document.getElementById('combo-search').value.toLowerCase();
+  const days=parseInt(document.getElementById('days-slider').value);
+  const list=document.getElementById('combos-list');
+  const empty=document.getElementById('combos-empty');
+  const countEl=document.getElementById('combo-count');
+
+  let filtered=state.combos.filter(c=>{
+    const mat=state.mats.find(m=>m.id===c.matId);
+    const tile=state.tiles.find(t=>t.id===c.tileId);
+    const cloth=state.cloths.find(cl=>cl.id===c.clothId);
+    if(!mat||!tile||!cloth) return false;
+    const acc=state.accessories.find(a=>a.id===c.accessoryId);
+    const rackNames=(c.rackIds||[]).map(rid=>(state.racks.find(r=>r.id===rid)?.name||'')).join(' ');
+    const matchQ=!q||[c.name,mat.name,tile.name,cloth.name,acc?.name||'',rackNames,c.notes||''].some(s=>s.toLowerCase().includes(q));
+    if(!matchQ) return false;
+    if(filterNever) return !c.lastUsed;
+    if(filterDays) return !c.lastUsed||daysSince(c.lastUsed)>=days;
+    return true;
+  });
+
+  countEl.textContent=filtered.length?`${filtered.length} combination${filtered.length!==1?'s':''}`:(state.combos.length?'No results':'');
+  if(!state.combos.length){ list.innerHTML=''; empty.style.display='block'; countEl.textContent=''; return; }
+  empty.style.display='none';
+  if(!filtered.length){ list.innerHTML=`<div class="empty"><div class="empty-icon red"><i class="ti ti-search"></i></div><h3>No matches</h3><p>Try adjusting your search or filters.</p></div>`; return; }
+
+  const favs=filtered.filter(c=>state.favs[c.id]);
+  const rest=filtered.filter(c=>!state.favs[c.id]);
+  list.innerHTML='';
+
+  // helper: first photo from mat/tile/cloth
+  function firstPhoto(c){ const m=state.mats.find(x=>x.id===c.matId); if(m?.photo) return {src:m.photo,alt:m.name}; const t=state.tiles.find(x=>x.id===c.tileId); if(t?.photo) return {src:t.photo,alt:t.name}; const cl=state.cloths.find(x=>x.id===c.clothId); if(cl?.photo) return {src:cl.photo,alt:cl.name}; return null; }
+
+  function makeImgStrip(c, imgClass, phClass, phSize){
+    const items=[state.mats.find(m=>m.id===c.matId),state.tiles.find(t=>t.id===c.tileId),state.cloths.find(cl=>cl.id===c.clothId)].filter(Boolean);
+    return items.map(item=>{
+      const t2=item===state.mats.find(m=>m.id===c.matId)?'mat':item===state.tiles.find(t=>t.id===c.tileId)?'tile':'cloth';
+      return item.photo?`<img class="${imgClass}" src="${item.photo}" alt="${item.name}">`:`<div class="${phClass} ph-${TYPE_CONFIG[t2].color}"><i class="ti ${TYPE_CONFIG[t2].icon}" style="font-size:${phSize}px;color:var(--${TYPE_CONFIG[t2].color})"></i></div>`;
+    }).join('');
+  }
+
+  const appendGroup=(label,items,container,isGrid,isList)=>{
+    if(!items.length) return;
+    if(label){
+      const gl=document.createElement('div'); gl.className='group-label'; gl.textContent=label; container.appendChild(gl);
+    }
+    items.forEach(c=>{
+      const mat=state.mats.find(m=>m.id===c.matId);
+      const tile=state.tiles.find(t=>t.id===c.tileId);
+      const cloth=state.cloths.find(cl=>cl.id===c.clothId);
+      const acc=state.accessories.find(a=>a.id===c.accessoryId);
+      const racks=(c.rackIds||[]).map(rid=>state.racks.find(r=>r.id===rid)).filter(Boolean);
+      const isFav=!!state.favs[c.id];
+      const ds=daysSince(c.lastUsed);
+      const card=document.createElement('div');
+
+      if(isList){
+        // ── LIST ROW ──
+        card.className='combo-list-row'+(isFav?' favorited':'');
+        const thumb=firstPhoto(c);
+        card.innerHTML=`
+          ${thumb?`<img class="combo-list-thumb" src="${thumb.src}" alt="${thumb.alt}">`:`<div class="combo-list-thumb-ph ph-teal"><i class="ti ti-layout-board" style="font-size:16px;color:var(--teal)"></i></div>`}
+          <span class="combo-list-name">${c.name}</span>
+          <button class="list-fav-btn" style="background:none;border:none;cursor:pointer;padding:4px;font-size:16px;color:${isFav?'var(--gold)':'var(--text-soft)'};flex-shrink:0">
+            <i class="ti ti-star${isFav?'-filled':''}"></i>
+          </button>`;
+        card.querySelector('.list-fav-btn').addEventListener('click',e=>{ e.stopPropagation(); state.favs[c.id]=!state.favs[c.id]; if(!state.favs[c.id]) delete state.favs[c.id]; save(); renderCombos(); });
+        card.addEventListener('click',()=>openComboDetail(c.id));
+      } else if(isGrid){
+        // ── GRID CARD ──
+        card.className='combo-grid-card'+(isFav?' favorited':'');
+        card.innerHTML=`
+          <div class="combo-grid-imgs" style="position:relative">
+            ${makeImgStrip(c,'combo-grid-img','combo-grid-img-ph',14)}
+            <button class="grid-fav-btn${isFav?' on':''}" style="position:absolute;top:5px;right:5px;background:${isFav?'var(--gold)':'rgba(255,255,255,0.85)'};border:none;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,0.2)">
+              <i class="ti ti-star${isFav?'-filled':''}" style="color:${isFav?'white':'var(--gold-dark)'}"></i>
+            </button>
+          </div>
+          <div class="combo-grid-name">${c.name}</div>`;
+        card.querySelector('.grid-fav-btn').addEventListener('click',e=>{ e.stopPropagation(); state.favs[c.id]=!state.favs[c.id]; if(!state.favs[c.id]) delete state.favs[c.id]; save(); renderCombos(); });
+        card.addEventListener('click',()=>openComboDetail(c.id));
+      } else {
+        // ── DETAIL CARD ──
+        card.className='combo-card'+(isFav?' favorited':'');
+        card.innerHTML=`
+          <div class="combo-imgs">${makeImgStrip(c,'combo-img-third','combo-img-third-ph',18)}</div>
+          <div class="combo-body">
+            <div class="combo-name">${c.name}</div>
+            <div class="combo-pills">
+              <span class="pill teal"><i class="ti ti-layout-board" style="font-size:9px"></i> ${mat?.name||'?'}</span>
+              <span class="pill purple"><i class="ti ti-squares" style="font-size:9px"></i> ${tile?.name||'?'}</span>
+              <span class="pill pink"><i class="ti ti-table" style="font-size:9px"></i> ${cloth?.name||'?'}</span>
+              ${racks.map(r=>`<span class="pill orange opt"><i class="ti ti-armchair" style="font-size:9px"></i> ${r.name}</span>`).join('')}
+              ${acc?`<span class="pill green opt"><i class="ti ti-sparkles" style="font-size:9px"></i> ${acc.name}</span>`:''}
+            </div>
+            ${c.notes?`<div class="combo-notes">${c.notes}</div>`:''}
+            ${c.lastUsed?`<span class="last-used-badge used"><i class="ti ti-calendar-check" style="font-size:11px"></i> ${fmtDate(c.lastUsed)} · ${ds}d ago</span>`:`<span class="last-used-badge never"><i class="ti ti-calendar-off" style="font-size:11px"></i> Never used</span>`}
+          </div>
+          <div class="combo-actions">
+            <button class="fav-btn${isFav?' on':''}"><i class="ti ti-star${isFav?'-filled':''}"></i> ${isFav?'Favorited':'Favorite'}</button>
+            <button class="edit-btn"><i class="ti ti-calendar"></i> Edit</button>
+            <button class="del-btn"><i class="ti ti-trash"></i></button>
+          </div>`;
+        card.querySelector('.fav-btn').addEventListener('click',e=>{ e.stopPropagation(); state.favs[c.id]=!state.favs[c.id]; if(!state.favs[c.id]) delete state.favs[c.id]; save(); renderCombos(); });
+        card.querySelector('.edit-btn').addEventListener('click',e=>{ e.stopPropagation(); openComboModal(c.id); });
+        card.querySelector('.del-btn').addEventListener('click',e=>{ e.stopPropagation(); state.combos=state.combos.filter(x=>x.id!==c.id); delete state.favs[c.id]; save(); renderCombos(); updateBadges(); });
+        card.addEventListener('click',()=>openComboDetail(c.id));
+      }
+      container.appendChild(card);
+    });
+  };
+
+  const isGrid = comboView==='grid';
+  const isList = comboView==='list';
+  let container;
+  if(isGrid){ container=document.createElement('div'); container.className='combos-grid-view'; }
+  else if(isList){ container=document.createElement('div'); container.className='combos-list-view'; }
+  else { container=list; }
+
+  if(favs.length) appendGroup('⭐ Favorites', favs, isGrid||isList?container:list, isGrid, isList);
+  appendGroup(favs.length?'All combinations':'', rest, isGrid||isList?container:list, isGrid, isList);
+  if(isGrid||isList) list.appendChild(container);
+}
+
+
+// ── Detail Popup ───────────────────────────────────────
+const detailBg = document.getElementById('detail-bg');
+detailBg.addEventListener('click', e=>{ if(e.target===detailBg) closeDetail(); });
+
+function closeDetail(){ detailBg.classList.remove('open'); }
+
+function openItemDetail(type, id){
+  const cfg = TYPE_CONFIG[type];
+  const item = getArr(type).find(x=>x.id===id);
+  if(!item) return;
+  const content = document.getElementById('detail-content');
+  const actions = document.getElementById('detail-actions');
+  content.innerHTML = `
+    <div class="detail-photo-wrap">
+      ${item.photo
+        ? `<img class="detail-photo" src="${item.photo}" alt="${item.name}">`
+        : `<div class="detail-photo-ph ph-${cfg.color}" style="border-radius:24px 24px 0 0"><i class="ti ${cfg.icon}" style="font-size:52px;color:var(--${cfg.color})"></i></div>`}
+      <button class="detail-close" onclick="closeDetail()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-tag" style="background:var(--${cfg.color}-light);color:var(--${cfg.color}-dark)">
+        <i class="ti ${cfg.icon}" style="font-size:11px"></i> ${cfg.label}
+      </div>
+      <div class="detail-name">${item.name}</div>
+      ${item.designer ? `<div class="detail-designer"><i class="ti ti-pencil"></i> ${item.designer}</div>` : ''}
+      ${item.notes ? `<div class="detail-notes">${item.notes}</div>` : ''}
+    </div>`;
+  actions.innerHTML = '';
+  const editBtn = document.createElement('button');
+  editBtn.className = 'detail-edit-btn';
+  editBtn.innerHTML = '<i class="ti ti-edit"></i> Edit';
+  editBtn.addEventListener('click', ()=>{ closeDetail(); openItemModal(type, id); });
+  const delBtn = document.createElement('button');
+  delBtn.className = 'detail-del-btn';
+  delBtn.innerHTML = '<i class="ti ti-trash"></i> Delete';
+  delBtn.addEventListener('click', ()=>{ closeDetail(); deleteItem(type, id); });
+  actions.appendChild(editBtn);
+  actions.appendChild(delBtn);
+  detailBg.classList.add('open');
+}
+
+function openComboDetail(id){
+  const c = state.combos.find(x=>x.id===id);
+  if(!c) return;
+  const mat = state.mats.find(m=>m.id===c.matId);
+  const tile = state.tiles.find(t=>t.id===c.tileId);
+  const cloth = state.cloths.find(cl=>cl.id===c.clothId);
+  const acc = state.accessories.find(a=>a.id===c.accessoryId);
+  const racks = (c.rackIds||[]).map(rid=>state.racks.find(r=>r.id===rid)).filter(Boolean);
+  const isFav = !!state.favs[c.id];
+  const ds = daysSince(c.lastUsed);
+
+  const imgItems = [mat,tile,cloth].filter(Boolean);
+  const imgsHTML = imgItems.map(item=>{
+    const t2 = item===mat?'mat':item===tile?'tile':'cloth';
+    return item.photo
+      ? `<img class="detail-combo-img" src="${item.photo}" alt="${item.name}">`
+      : `<div class="detail-combo-img-ph ph-${TYPE_CONFIG[t2].color}"><i class="ti ${TYPE_CONFIG[t2].icon}" style="font-size:28px;color:var(--${TYPE_CONFIG[t2].color})"></i></div>`;
+  }).join('');
+
+  const content = document.getElementById('detail-content');
+  const actions = document.getElementById('detail-actions');
+  content.innerHTML = `
+    <div class="detail-photo-wrap">
+      <div class="detail-combo-imgs" style="border-radius:24px 24px 0 0;overflow:hidden">${imgsHTML}</div>
+      <button class="detail-close" onclick="closeDetail()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="detail-body">
+      ${isFav ? '<div class="detail-fav-badge"><i class="ti ti-star-filled"></i> Favorite</div>' : ''}
+      <div class="detail-name">${c.name}</div>
+      <div class="detail-pills">
+        <span class="pill teal"><i class="ti ti-layout-board" style="font-size:9px"></i> ${mat?.name||'?'}</span>
+        <span class="pill purple"><i class="ti ti-squares" style="font-size:9px"></i> ${tile?.name||'?'}</span>
+        <span class="pill pink"><i class="ti ti-table" style="font-size:9px"></i> ${cloth?.name||'?'}</span>
+        ${racks.map(r=>`<span class="pill orange"><i class="ti ti-armchair" style="font-size:9px"></i> ${r.name}</span>`).join('')}
+        ${acc ? `<span class="pill green"><i class="ti ti-sparkles" style="font-size:9px"></i> ${acc.name}</span>` : ''}
+      </div>
+      ${c.notes ? `<div class="detail-notes">${c.notes}</div>` : ''}
+      <div class="detail-row">
+        ${c.lastUsed
+          ? `<i class="ti ti-calendar-check"></i> Last used ${fmtDate(c.lastUsed)}${ds!==null?' · '+ds+'d ago':''}`
+          : `<i class="ti ti-calendar-off"></i> Never used`}
+      </div>
+    </div>`;
+  actions.innerHTML = '';
+  const editBtn = document.createElement('button');
+  editBtn.className = 'detail-edit-btn';
+  editBtn.innerHTML = '<i class="ti ti-edit"></i> Edit';
+  editBtn.addEventListener('click', ()=>{ closeDetail(); openComboModal(id); });
+  const delBtn = document.createElement('button');
+  delBtn.className = 'detail-del-btn';
+  delBtn.innerHTML = '<i class="ti ti-trash"></i> Delete';
+  delBtn.addEventListener('click', ()=>{ closeDetail(); state.combos=state.combos.filter(x=>x.id!==id); delete state.favs[id]; save(); renderCombos(); updateBadges(); });
+  actions.appendChild(editBtn);
+  actions.appendChild(delBtn);
+  detailBg.classList.add('open');
+}
+
+
+// ── Wish List ──────────────────────────────────────────
+const WISH_CATS = ['mat','tile','rack'];
+const WISH_CAT_CONFIG = {
+  mat:  { label:'Mats',      color:'teal',   icon:'ti-layout-board' },
+  tile: { label:'Tile Sets', color:'purple', icon:'ti-squares'      },
+  rack: { label:'Racks',     color:'orange', icon:'ti-armchair'     },
+};
+let wishEditId = null;
+let wishEditCat = 'tile';
+let wishPendingPhoto = null;
+let wishSort = 'date';
+
+function fmtRelease(d){ if(!d) return ''; return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function daysUntil(d){ if(!d) return null; return Math.ceil((new Date(d).getTime()-Date.now())/(864e5)); }
+
+
+function openWishDetail(id){
+  const item = (state.wishlist||[]).find(x=>x.id===id);
+  if(!item) return;
+  const cfg = WISH_CAT_CONFIG[item.cat];
+  const du = daysUntil(item.release);
+  const detailContent = document.getElementById('detail-content');
+  const detailActions = document.getElementById('detail-actions');
+
+  detailContent.innerHTML = `
+    <div class="detail-photo-wrap">
+      ${item.photo
+        ? `<img class="detail-photo" src="${item.photo}" alt="${item.name}">`
+        : `<div class="detail-photo-ph" style="background:var(--${cfg.color}-light);border-radius:24px 24px 0 0"><i class="ti ${cfg.icon}" style="font-size:52px;color:var(--${cfg.color})"></i></div>`}
+      <button class="detail-close" onclick="closeDetail()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-tag" style="background:var(--${cfg.color}-light);color:var(--${cfg.color}-dark)">
+        <i class="ti ti-wand" style="font-size:11px"></i> Wish List · ${cfg.label.slice(0,-1)}
+      </div>
+      <div class="detail-name">${item.name}</div>
+      ${item.designer?`<div class="detail-designer"><i class="ti ti-pencil"></i> ${item.designer}</div>`:''}
+      <div class="detail-pills" style="margin:8px 0">
+        ${item.release?`<span class="wish-pill ${du!==null&&du<=30?'soon':'date'}"><i class="ti ti-calendar" style="font-size:10px"></i> ${fmtRelease(item.release)}${du!==null?(du<0?' · Released!':du===0?' · Today!':` · ${du}d away`):''}  </span>`:''}
+        ${item.cost?`<span class="wish-pill cost">💰 ${item.cost}</span>`:''}
+      </div>
+      ${item.notes?`<div class="detail-notes">${item.notes}</div>`:''}
+    </div>`;
+
+  detailActions.innerHTML = '';
+  const editBtn = document.createElement('button');
+  editBtn.className = 'detail-edit-btn';
+  editBtn.innerHTML = '<i class="ti ti-edit"></i> Edit';
+  editBtn.addEventListener('click', ()=>{ closeDetail(); openWishModal(item.cat, item.id); });
+  const delBtn = document.createElement('button');
+  delBtn.className = 'detail-del-btn';
+  delBtn.innerHTML = '<i class="ti ti-trash"></i> Delete';
+  delBtn.addEventListener('click', ()=>{ closeDetail(); state.wishlist=state.wishlist.filter(x=>x.id!==item.id); save(); renderWishlist(); updateBadges(); });
+  detailActions.appendChild(editBtn);
+  detailActions.appendChild(delBtn);
+  document.getElementById('detail-bg').classList.add('open');
+}
+
+function renderWishlist(){
+  if(!state.wishlist) state.wishlist=[];
+  const searchEl = document.getElementById('wish-search');
+  const q = searchEl ? searchEl.value.toLowerCase() : '';
+
+  let items = state.wishlist.filter(x=>
+    !q || [x.name, x.designer||'', x.cost||'', x.notes||''].some(s=>s.toLowerCase().includes(q))
+  );
+
+  items = [...items].sort((a,b)=>{
+    if(wishSort==='date'){
+      if(!a.release&&!b.release) return 0;
+      if(!a.release) return 1; if(!b.release) return -1;
+      return new Date(a.release)-new Date(b.release);
+    }
+    if(wishSort==='name') return a.name.localeCompare(b.name);
+    if(wishSort==='cost'){
+      return (parseFloat((a.cost||'').replace(/[^0-9.]/g,''))||0)-(parseFloat((b.cost||'').replace(/[^0-9.]/g,''))||0);
+    }
+    return 0;
+  });
+
+  WISH_CATS.forEach(cat=>{
+    const cfg = WISH_CAT_CONFIG[cat];
+    const catItems = items.filter(x=>x.cat===cat);
+    const itemDiv = document.getElementById('wish-items-'+cat);
+    if(!itemDiv) return;
+    itemDiv.innerHTML = '';
+
+    if(!catItems.length){
+      const empty = document.createElement('div');
+      empty.style.cssText = 'text-align:center;padding:12px;color:var(--text-soft);font-size:13px;background:var(--cream);border-radius:10px';
+      empty.textContent = 'Nothing here yet — tap Add!';
+      itemDiv.appendChild(empty);
+      return;
+    }
+
+    catItems.forEach(item=>{
+      const du = daysUntil(item.release);
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;cursor:pointer';
+
+      const iconWrap = document.createElement('div');
+      if(item.photo){
+        iconWrap.style.cssText = 'width:52px;height:52px;border-radius:8px;flex-shrink:0;overflow:hidden';
+        iconWrap.innerHTML = `<img src="${item.photo}" style="width:52px;height:52px;object-fit:cover;border-radius:8px" alt="${item.name}">`;
+      } else {
+        iconWrap.style.cssText = `width:52px;height:52px;border-radius:8px;background:var(--${cfg.color}-light);display:flex;align-items:center;justify-content:center;flex-shrink:0`;
+        iconWrap.innerHTML = `<i class="ti ${cfg.icon}" style="color:var(--${cfg.color});font-size:22px"></i>`;
+      }
+
+      const body = document.createElement('div');
+      body.style.cssText = 'flex:1;min-width:0';
+      let metaHTML = '';
+      if(item.release){
+        const soon = du!==null && du<=30;
+        const lbl = du===null?'':du<0?' · Released!':du===0?' · Today!':(` · ${du}d away`);
+        metaHTML += `<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${soon?'var(--red-light)':'var(--teal-light)'};color:${soon?'var(--red-dark)':'var(--teal-dark)'};margin-right:4px"><i class="ti ti-calendar" style="font-size:10px"></i> ${fmtRelease(item.release)}${lbl}</span>`;
+      }
+      if(item.cost){
+        metaHTML += `<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--gold-light);color:var(--gold-dark)">💰 ${item.cost}</span>`;
+      }
+      body.innerHTML = `
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px">${item.name}</div>
+        ${item.designer?`<div style="font-size:12px;color:var(--text-soft);margin-bottom:4px"><i class="ti ti-pencil" style="font-size:10px"></i> ${item.designer}</div>`:''}
+        ${metaHTML?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px">${metaHTML}</div>`:''}
+        ${item.notes?`<div style="font-size:12px;color:var(--text-soft);line-height:1.4;margin-top:3px">${item.notes}</div>`:''}`;
+
+      const btns = document.createElement('div');
+      btns.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex-shrink:0';
+
+      const editBtn = document.createElement('button');
+      editBtn.style.cssText = 'background:none;border:1.5px solid var(--teal);border-radius:6px;padding:5px 8px;cursor:pointer;color:var(--teal-dark);font-size:12px';
+      editBtn.innerHTML = '<i class="ti ti-edit"></i>';
+      editBtn.addEventListener('click', e=>{ e.stopPropagation(); openWishModal(item.cat, item.id); });
+
+      const delBtn = document.createElement('button');
+      delBtn.style.cssText = 'background:none;border:1.5px solid rgba(204,31,138,0.25);border-radius:6px;padding:5px 8px;cursor:pointer;color:var(--red);font-size:12px';
+      delBtn.innerHTML = '<i class="ti ti-trash"></i>';
+      delBtn.addEventListener('click', e=>{ e.stopPropagation(); state.wishlist=state.wishlist.filter(x=>x.id!==item.id); save(); renderWishlist(); updateBadges(); });
+
+      btns.appendChild(editBtn);
+      btns.appendChild(delBtn);
+      card.appendChild(iconWrap);
+      card.appendChild(body);
+      card.appendChild(btns);
+      card.addEventListener('click', ()=>openWishDetail(item.id));
+      itemDiv.appendChild(card);
+    });
+  });
+
+  updateBadges();
+}
+
+
+// Wish modal
+const wishModalBg = document.getElementById('wish-modal-bg');
+wishModalBg.addEventListener('click', e=>{ if(e.target===wishModalBg) closeWishModal(); });
+document.getElementById('wish-modal-cancel').addEventListener('click', closeWishModal);
+function closeWishModal(){ wishModalBg.classList.remove('open'); }
+
+// Wish photo upload
+const wishPhotoBtn = document.getElementById('wish-photo-btn');
+const wishPhotoInput = document.getElementById('wish-photo-input');
+if(wishPhotoBtn) wishPhotoBtn.addEventListener('click', ()=>wishPhotoInput.click());
+if(wishPhotoInput) wishPhotoInput.addEventListener('change', function(){
+  const file=this.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{ wishPendingPhoto=e.target.result; const p=document.getElementById('wish-photo-preview'); p.src=wishPendingPhoto; p.style.display='block'; };
+  reader.readAsDataURL(file);
+});
+
+// Wire static add buttons
+['mat','tile','rack'].forEach(cat=>{
+  const btn = document.getElementById('wbtn-'+cat);
+  if(btn) btn.addEventListener('click', ()=>openWishModal(cat));
+});
+
+function openWishModal(cat, editId){
+  wishEditCat = cat;
+  wishEditId = editId||null;
+  const cfg = WISH_CAT_CONFIG[cat];
+  const existing = editId ? (state.wishlist||[]).find(x=>x.id===editId) : null;
+  document.getElementById('wish-modal-icon').className = 'modal-icon '+cfg.color;
+  document.getElementById('wish-modal-icon-i').className = 'ti '+cfg.icon;
+  document.getElementById('wish-modal-title').textContent = (existing?'Edit ':'Add ')+cfg.label.slice(0,-1);
+  document.getElementById('wish-name').value = existing?.name||'';
+  document.getElementById('wish-designer').value = existing?.designer||'';
+  document.getElementById('wish-release').value = existing?.release||'';
+  document.getElementById('wish-cost').value = existing?.cost||'';
+  document.getElementById('wish-notes').value = existing?.notes||'';
+  const wp = document.getElementById('wish-photo-preview');
+  wp.src = existing?.photo||''; wp.style.display = existing?.photo?'block':'none';
+  document.getElementById('wish-photo-input').value = '';
+  wishPendingPhoto = null;
+  wishModalBg.classList.add('open');
+  setTimeout(()=>document.getElementById('wish-name').focus(),100);
+}
+
+
+// Wish save handler
+document.getElementById('wish-modal-save').addEventListener('click', function(){
+  const name = document.getElementById('wish-name').value.trim();
+  if(!name){ alert('Please enter a name.'); return; }
+  if(!state.wishlist) state.wishlist=[];
+  const existingWish = wishEditId ? (state.wishlist).find(x=>x.id===wishEditId) : null;
+  const wishPhoto = wishPendingPhoto || existingWish?.photo || '';
+  const item = {
+    id:       wishEditId || uid(),
+    cat:      wishEditCat,
+    name,
+    designer: document.getElementById('wish-designer').value.trim(),
+    release:  document.getElementById('wish-release').value || null,
+    cost:     document.getElementById('wish-cost').value.trim(),
+    notes:    document.getElementById('wish-notes').value.trim(),
+    photo:    wishPhoto
+  };
+  if(wishEditId){
+    const idx = state.wishlist.findIndex(x=>x.id===wishEditId);
+    if(idx>-1) state.wishlist[idx] = item;
+    else state.wishlist.push(item);
+  } else {
+    state.wishlist.push(item);
+  }
+  save();
+  closeWishModal();
+  renderWishlist();
+  updateBadges();
+});
+
+
+
+// sort buttons
+['date','name','cost'].forEach(s=>{
+  const el = document.getElementById('wsort-'+s);
+  if(el) el.addEventListener('click',()=>{
+    wishSort=s;
+    ['date','name','cost'].forEach(x=>{ const b=document.getElementById('wsort-'+x); if(b) b.classList.toggle('active',x===s); });
+    renderWishlist();
+  });
+});
+const wishSearchEl = document.getElementById('wish-search');
+if(wishSearchEl) wishSearchEl.addEventListener('input', renderWishlist);
+
+// ── Export / Import ────────────────────────────────────
+document.getElementById('export-btn').addEventListener('click',function(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='stephanie-mahjong-backup.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+});
+document.getElementById('import-btn').addEventListener('click',()=>document.getElementById('import-file-input').click());
+document.getElementById('import-file-input').addEventListener('change',function(){
+  const file=this.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const imp=JSON.parse(e.target.result);
+      if(!imp.mats||!imp.tiles||!imp.combos){ alert('Invalid backup file.'); return; }
+      state={mats:[],tiles:[],cloths:[],racks:[],accessories:[],combos:[],favs:{},wishlist:[], ...imp};
+      save(); renderCombos(); updateBadges();
+      alert('Imported! '+state.mats.length+' mats, '+state.tiles.length+' tile sets, '+state.cloths.length+' tablecloths, '+state.racks.length+' racks, '+state.accessories.length+' accessories, '+state.combos.length+' combinations.');
+    }catch(err){ alert('Could not read the file.'); }
+  };
+  reader.readAsText(file); this.value='';
+});
+
+// ── Init ───────────────────────────────────────────────
+// Test if localStorage works at all
+let storageWorks = false;
+try{
+  localStorage.setItem('mj_test','1');
+  storageWorks = localStorage.getItem('mj_test') === '1';
+  localStorage.removeItem('mj_test');
+}catch(e){ storageWorks = false; }
+
+load().then(()=>{
+  if(!state.wishlist) state.wishlist=[];
+  try{ renderCombos(); }catch(e){}
+  try{ renderWishlist(); }catch(e){}
+  try{ updateBadges(); }catch(e){}
+}).catch(e=>{
+  if(!state.wishlist) state.wishlist=[];
+  try{ renderCombos(); }catch(e){}
+  try{ renderWishlist(); }catch(e){}
+  try{ updateBadges(); }catch(e){}
+});
+
+
+</script>
+</body>
+</html>
